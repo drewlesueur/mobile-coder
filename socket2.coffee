@@ -16,7 +16,7 @@ allDigits = (str) ->
   str.replace(/\D/g, "") - 0
 
 numberOfSpaces = (str) ->
-  str.replace(/[^ ]/g, "").length
+  str.replace(/[^\ ]/g, "").length
 
 `
 function pack(num) {
@@ -40,12 +40,13 @@ close = (stream) ->
 
 server = new Server
 server.on 'connection', (stream) ->
-  stream.on "data", (str) ->
-    str = str.toString()
-    console.log str.toString()
+  stream.on "data", (raw) ->
+    str = raw.toString()
+    console.log str
     if _.startsWith str, "GET / HTTP/1.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade"
       console.log "web socket here we come"
-      
+      last = raw.binarySlice raw.length - 8
+      console.log "LAST IS #{last} is #{last.length} chars long"
       req = str.split "\r\n"
       for line in req
         if _.startsWith line, "Origin:"
@@ -69,7 +70,7 @@ server.on 'connection', (stream) ->
       hash = Crypto.createHash "md5"
       hash.update final1
       hash.update final2
-      hash.update _.s(req, -1, 1).toString "binary"
+      hash.update last
 
       ret =  "" +
         "HTTP/1.1 101 WebSocket Protocol Handshake\r\n" +
@@ -83,7 +84,7 @@ server.on 'connection', (stream) ->
       console.log()
       console.log ret
       stream.write ret, "binary"
-     
+      write stream, "test" 
 
              
       

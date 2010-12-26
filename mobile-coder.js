@@ -1,7 +1,6 @@
 (function() {
   $(document).ready(function() {
-    var ws;
-    ws = new WebSocket("ws://mcode.the.tl:9999/");
+    window.ws = new WebSocket("ws://mcode.the.tl:9999/");
     ws.onopen = function() {
       console.log("open");
       return ws.send("hahaha");
